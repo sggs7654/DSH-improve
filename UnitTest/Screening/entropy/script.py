@@ -29,4 +29,10 @@ print(get_entropy(centroids, weight, w_mat, t_list) == 1)
 w_mat = np.mat([[0, -1], [1, 0]]).transpose()
 t_list = np.array([-0.5, 0.5])
 print(get_entropy(centroids, weight, w_mat, t_list) == 2)
+w_mat = np.mat([[0, -1], [1, 0]]).transpose()
+t_list = np.array([-0.5, 0.5])
+w_mat[:,0] = 0
+t_list[0] = 0
+print(get_entropy(centroids, weight, w_mat, t_list) == 1)
+
 

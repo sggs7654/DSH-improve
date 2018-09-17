@@ -9,12 +9,14 @@ class Preprocessor:
     cluster = None
     neighbor_indices = None  # 质心临近点索引矩阵, 第一维为质心索引,第二维为临近点索引
     weight = None  # 质心对应簇在数据集中的占比权重所组成的列表,其索引与质心索引一致
+    centroids = None
     w = None  # np矩阵, 每列为一个w向量
     t = None  # np数组
 
     def __init__(self,point_set, cluster):
         self.point_set = point_set
         self.cluster = cluster
+        self.centroids = cluster.centroids
         self.get_centroids_info()  # 计算: 1.质心最近邻索引, 2.各簇占比权重
         self.get_hyperplane_set()  # 计算相邻质心间的超平面参数(w,t)
 
