@@ -53,7 +53,7 @@ class Preprocessor:
         self.t = np.empty(len(hyperplanes_dict))
         for i in range(len(hyperplanes_dict)):
             self.t[i] = hyperplanes[i][1]
-        self.w = np.empty((len(self.t), self.point_set.dim))  # 保存w的np矩阵, 每列为一个w向量
+        self.w = np.empty((len(self.t), self.point_set.point_set.shape[1]))  # 保存w的np矩阵, 每列为一个w向量
         for i in range(len(self.t)):  # 这里的处理方式为: 先按行赋值然后转置
             self.w[i] = hyperplanes[i][0]
         self.w = self.w.transpose()

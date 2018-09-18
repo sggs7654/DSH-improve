@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from collections import namedtuple
 
 
 class draw:
@@ -90,6 +91,34 @@ class draw:
             plt.plot(px, py, color='#C0C0C0', alpha=0.3)
         plt.plot([], [], color='#C0C0C0', label='candidate projection', alpha=0.8)
         for hp in self.hyperplanes_list:
+            px,py = self.get_line(hp)
+            if max(px) - min(px) > 1000:
+                raise RecursionError(hp)
+            plt.plot(px, py, color='#FF0000', alpha=0.7)
+        plt.plot([], [], color='#FF0000', label='high entropy projection', alpha=0.8)
+        x = []
+        y = []
+        for i in self.data.point_set:
+            x.append(i[0])
+            y.append(i[1])
+        plt.scatter(x, y, label='data point')
+        plt.legend()
+        plt.show()
+
+    def new_screening(self, data, w, t, index_screening):
+        hyperplane = namedtuple('hyperplane', ['w', 't'])  # 超平面命名元组
+        self.data = data
+        # for hp in self.hyperplanes_dict.values():
+        for i in range(len(t)):
+            hp = hyperplane(w=w[:, i], t=t[i])
+            px, py = self.get_line(hp)
+            if max(px) - min(px) > 1000:
+                raise RecursionError(hp)
+            plt.plot(px, py, color='#C0C0C0', alpha=0.3)
+        plt.plot([], [], color='#C0C0C0', label='candidate projection', alpha=0.8)
+        # for hp in self.hyperplanes_list:
+        for i in index_screening:
+            hp = hyperplane(w=w[:, int(i)], t=t[int(i)])
             px,py = self.get_line(hp)
             if max(px) - min(px) > 1000:
                 raise RecursionError(hp)

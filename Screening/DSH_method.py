@@ -7,7 +7,7 @@ import numpy as np
 class Storage:
 
     length = 4  # 哈希编码长度(其值应小于len(self.hyperplanes_dict), 该值与neighbors_size正相关)
-    neighbors_size = 4  # 质心临近点集容量(其上限为质心数目 - 1), 其值最好大于length
+    neighbors_size = 4  # 质心临近点集容量r(其上限为质心数目 - 1), 其值最好大于length
     point_set = None
     cluster = None
     neighbor_indices = None  # 质心临近点索引矩阵, 第一维为质心索引,第二维为临近点索引
@@ -15,6 +15,8 @@ class Storage:
     hyperplanes_dict = None  # 保存超平面的字典: key为包含两个质心索引的set, value为包含w,t的命名元组
     hyperplanes_list = None  # 保存筛选后的超平面的列表, 其元素为超平面的wt命名元组
     point_indices_dict = None  # 保存数据经过LSH处理后的索引字典, key为哈希编码组成的元组, value为点索引组成的列表
+    w = None  # 超平面参数, np矩阵, 列向量
+    t = None  # 超平面参数, np数组
 
     def __init__(self,point_set, cluster):
         self.point_set = point_set
@@ -22,6 +24,7 @@ class Storage:
         self.get_centroids_info()  # 计算: 1.质心最近邻索引, 2.各簇占比权重
         self.get_hyperplane_set()  # 计算相邻质心间的超平面参数(w,t)
         self.hyperplane_screening()  # 计算信息熵, 筛选超平面
+        self.transform()  # 把超平面list转换成w矩阵和t数组的形式
         # self.build_indices()  # 计算数据点的哈希索引(存储索引)
 
     def get_centroids_info(self):
@@ -88,6 +91,15 @@ class Storage:
                 l_count = l_count + 1
                 if l_count >= self.length:
                     return
+
+    def transform(self):  # 把超平面list转换成w矩阵和t数组的形式
+        self.t = np.empty(len(self.hyperplanes_list))
+        for i in range(len(self.hyperplanes_list)):
+            self.t[i] = self.hyperplanes_list[i].t
+        self.w = np.empty((len(self.t), self.point_set.vec_length))  # 保存w的np矩阵, 每列为一个w向量
+        for i in range(len(self.t)):  # 这里的处理方式为: 先按行赋值然后转置
+            self.w[i] = self.hyperplanes_list[i].w
+        self.w = self.w.transpose()
 
     # def build_indices(self):  # 改成高级一点的保存方式(比如数组), list实在太low了
     #     self.point_indices_dict = {}  # 保存数据经过LSH处理后的索引字典, key为哈希编码组成的元组, value为点索引组成的列表
