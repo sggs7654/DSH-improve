@@ -4,13 +4,14 @@ from sklearn.cluster import KMeans
 
 # 初始化时接收一个np矩阵作为数据集
 class Cluster:
-    k = 5  # kmeans聚类中的质心数目
+    k = None  # kmeans聚类中的质心数目
     point_set = None
     centroids = None
     labels = None
 
-    def __init__(self, point_set):  # 接收一个np矩阵作为数据集
+    def __init__(self, point_set, k=20):  # 接收一个np矩阵作为数据集
         self.point_set = point_set
+        self.k = k
         estimator = KMeans(n_clusters=self.k, max_iter=5)  # 初始化聚类器
         estimator.fit(self.point_set)  # 拟合模型
         self.labels = estimator.labels_  # 获取聚类标签

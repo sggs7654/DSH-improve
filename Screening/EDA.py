@@ -4,9 +4,9 @@ from random import sample, randint, random
 
 
 class EDA:
-    h = 10  # 种群数量
+    h = 100  # 种群数量
     k = 0.2  # 选优系数(0.1-0.3)
-    convergence_limit = 5  # 收敛限制: 连续多少次结果无改善时停止搜索
+    convergence_limit = 20  # 收敛限制: 连续多少次结果无改善时停止搜索
     optimum_solution = None  # 保存每轮迭代中的最优解, np矩阵, 行向量
     op_entropy_list = None  # 保存每轮迭代中的最优解对应的信息熵, 列表
     ave_entropy_list = None  # 保存每轮迭代中的种群平均的信息熵, 列表
