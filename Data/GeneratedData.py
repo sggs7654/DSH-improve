@@ -1,10 +1,12 @@
 import numpy as np
-import matplotlib.pyplot as plt
+from sklearn.neighbors import NearestNeighbors
+from random import sample
 
 
 class GeneratedData:
     seed = 1  # 随机种子
     dim = 2  # ←跟后续代码耦合, 不建议改动
+    vec_length = 2
     point_num = 200
     center_num = 7
     radius = 13
@@ -12,10 +14,24 @@ class GeneratedData:
     max_coordinate = 150
     point_set = None  # 一个np矩阵, 每行为一个数据向量, 行数为point_num,列数为dim
     center_set = None  # 保存中心点的np矩阵
+    query_num = 100  # 查询点数
+    query_indices = None  # 查询点索引, 可通过point_set[query_indices]得到查询点集
+    result_indices = None  # 正确结果索引, np矩阵, 行向量
 
     def __init__(self):
         self.build_center()
         self.build_point()
+        self.build_test_set()
+
+    def build_test_set(self):
+        # 这里取离查询点距离最近的前2%的点作为答案点
+        # 算法会把查询点自己也算进去, 不过我们的查询点也是在数据中取的,所以不影响
+        neigh = NearestNeighbors(n_neighbors=int(0.02*self.point_num),
+                                 algorithm='brute')
+        neigh.fit(self.point_set)
+        self.query_indices = sample(range(self.point_num), self.query_num)
+        self.result_indices = neigh.kneighbors(self.point_set[self.query_indices],
+                                               return_distance=False)
 
     def reset_seed(self):  # 不用改
         self.seed = self.seed + 11

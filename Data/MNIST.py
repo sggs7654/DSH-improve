@@ -19,6 +19,7 @@ class MNIST:
             self.buf = f1.read()
         self.point_num = struct.unpack_from('>IIII', self.buf, 0)[1]
         self.load_data()
+        self.build_test_set()
 
     def load_data(self):  # 把缓冲区中的原始数据转化成np矩阵
         self.point_set = np.empty((self.point_num, 784))  # empty是创建数组最快的方法

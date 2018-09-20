@@ -105,7 +105,7 @@ class draw:
         plt.legend()
         plt.show()
 
-    def new_screening(self, data, w, t, index_screening):
+    def new_screening(self, data, w, t, index_screening, centroids = None):
         hyperplane = namedtuple('hyperplane', ['w', 't'])  # 超平面命名元组
         self.data = data
         # for hp in self.hyperplanes_dict.values():
@@ -130,5 +130,12 @@ class draw:
             x.append(i[0])
             y.append(i[1])
         plt.scatter(x, y, label='data point')
+        if centroids is not None:
+            x.clear()
+            y.clear()
+            for i in centroids:
+                x.append(i[0])
+                y.append(i[1])
+            plt.scatter(x, y, label='centroids')
         plt.legend()
         plt.show()

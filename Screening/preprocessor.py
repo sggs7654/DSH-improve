@@ -4,7 +4,7 @@ import numpy as np
 
 class Preprocessor:
 
-    neighbors_size = 4  # 质心临近点集容量(其上限为质心数目 - 1), 其值最好大于length
+    neighbors_size = None  # 质心临近点集容量(其上限为质心数目 - 1), 其值最好大于length
     point_set = None
     cluster = None
     neighbor_indices = None  # 质心临近点索引矩阵, 第一维为质心索引,第二维为临近点索引
@@ -13,7 +13,8 @@ class Preprocessor:
     w = None  # np矩阵, 每列为一个w向量
     t = None  # np数组
 
-    def __init__(self,point_set, cluster):
+    def __init__(self,point_set, cluster, r=4):
+        self.neighbors_size = r
         self.point_set = point_set
         self.cluster = cluster
         self.centroids = cluster.centroids

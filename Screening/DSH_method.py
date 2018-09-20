@@ -6,8 +6,8 @@ import numpy as np
 
 class Storage:
 
-    length = 4  # 哈希编码长度(其值应小于len(self.hyperplanes_dict), 该值与neighbors_size正相关)
-    neighbors_size = 4  # 质心临近点集容量r(其上限为质心数目 - 1), 其值最好大于length
+    length = None  # 哈希编码长度(其值应小于len(self.hyperplanes_dict), 该值与neighbors_size正相关)
+    neighbors_size = None  # 质心临近点集容量r(其上限为质心数目 - 1), 其值最好大于length
     point_set = None
     cluster = None
     neighbor_indices = None  # 质心临近点索引矩阵, 第一维为质心索引,第二维为临近点索引
@@ -18,13 +18,16 @@ class Storage:
     w = None  # 超平面参数, np矩阵, 列向量
     t = None  # 超平面参数, np数组
 
-    def __init__(self,point_set, cluster):
+    def __init__(self,point_set, cluster, length=10, r=4):
+        self.length = length
+        self.neighbors_size = r
         self.point_set = point_set
         self.cluster = cluster
         self.get_centroids_info()  # 计算: 1.质心最近邻索引, 2.各簇占比权重
         self.get_hyperplane_set()  # 计算相邻质心间的超平面参数(w,t)
         self.hyperplane_screening()  # 计算信息熵, 筛选超平面
         self.transform()  # 把超平面list转换成w矩阵和t数组的形式
+        # self.get_result_indices()  # 最终得到的超平面索引
         # self.build_indices()  # 计算数据点的哈希索引(存储索引)
 
     def get_centroids_info(self):
@@ -36,12 +39,11 @@ class Storage:
         # 离当前质心最近的质心是其本身, 这不是我们所需要的,所以删去
         self.neighbor_indices = np.delete(self.neighbor_indices, 0, axis=1)  # 删除矩阵中的第0列
         # 计算质心对应簇在数据集中的占比权重
-        self.weight = []
-        for i in range(len(self.cluster.centroids)):
-            self.weight.append(0)
+        self.weight = np.zeros(len(self.cluster.centroids))
         for i in range(self.point_set.point_num):
             centroids_index = self.cluster.labels[i]
             self.weight[centroids_index] += 1
+        self.weight = self.weight / self.point_set.point_num
 
     def get_hyperplane_set(self):
         hyperplane = namedtuple('hyperplane', ['w', 't'])  # 超平面命名元组
@@ -72,8 +74,8 @@ class Storage:
                 else:
                     p1 = p1 + self.weight[centroid_index]
             # print((p0 + p1) == self.point_set.point_num)  # 测试代码: 分布于超平面两侧的点数之和应等于总点数
-            p1 /= self.point_set.point_num
-            p0 /= self.point_set.point_num
+            # p1 /= self.point_set.point_num
+            # p0 /= self.point_set.point_num
             entropy = - p0 * np.log2(p0) - p1 * np.log2(p1)
             # 考虑到可能存在'两个超平面估算的熵相等'的情况, 所以把wt元组保存在列表中
             if entropy in screening_dict.keys():
@@ -101,19 +103,12 @@ class Storage:
             self.w[i] = self.hyperplanes_list[i].w
         self.w = self.w.transpose()
 
-    # def build_indices(self):  # 改成高级一点的保存方式(比如数组), list实在太low了
-    #     self.point_indices_dict = {}  # 保存数据经过LSH处理后的索引字典, key为哈希编码组成的元组, value为点索引组成的列表
-    #     for i in range(self.point_set.point_num):
-    #         point = self.point_set.point_set[i]
-    #         code_list = []  # 点编码列表, 保存点被超平面分割后得到的编码
-    #         for hp in self.hyperplanes_list:
-    #             x = np.array([point.x,point.y])
-    #             if np.dot(hp.w,x) >= hp.t:
-    #                 code_list.append(1)
-    #             else:
-    #                 code_list.append(0)
-    #         key = tuple(code_list)
-    #         if key in self.point_indices_dict.keys():
-    #             self.point_indices_dict[key].append(i)
-    #         else:
-    #             self.point_indices_dict[key] = [i]
+    # def get_result_indices(self):
+    #     result_indices = []
+    #     for hp in self.hyperplanes_list:
+    #         for i in range(len(self.t)):
+    #             if hp.t == self.t[i]:
+    #                 result_indices.append(i)
+    #                 continue
+    #     print(result_indices)
+

@@ -4,7 +4,7 @@ from random import sample, randint, random
 
 
 class EDA:
-    h = 100  # 种群数量
+    h = None  # 种群数量
     k = 0.2  # 选优系数(0.1-0.3)
     convergence_limit = 20  # 收敛限制: 连续多少次结果无改善时停止搜索
     optimum_solution = None  # 保存每轮迭代中的最优解, np矩阵, 行向量
@@ -18,7 +18,8 @@ class EDA:
     centroids = None  # 质心坐标, np矩阵, 行向量
     weight = None  # 质心权重, np数组
 
-    def __init__(self, w, t, centroids, weight, m):
+    def __init__(self, w, t, centroids, weight, m, h=100):
+        self.h = h
         self.w, self.t, self.centroids, self.weight = w, t, centroids, weight
         self.n = len(t)
         self.m = m
@@ -78,9 +79,9 @@ class EDA:
         while True:
             ig, ib = self.select()
             self.fit(ig, ib)
-            print("[count]", count,
-                  "   [best_entropy]", self.op_entropy_list[count],
-                  "   [ave_entropy]", self.ave_entropy_list[count])
+            # print("[count]", count,
+            #       "   [best_entropy]", self.op_entropy_list[count],
+            #       "   [ave_entropy]", self.ave_entropy_list[count])
             if count > 0:
                 if self.op_entropy_list[count] <= self.op_entropy_list[count - 1]:
                     convergence_count += 1  # 结果无改善, 收敛计数器加一
