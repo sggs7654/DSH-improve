@@ -4,7 +4,7 @@ from random import sample
 
 
 class GeneratedData:
-    seed = 1  # 随机种子
+    seed = None  # 随机种子
     dim = 2  # ←跟后续代码耦合, 不建议改动
     vec_length = 2
     point_num = 200
@@ -18,7 +18,8 @@ class GeneratedData:
     query_indices = None  # 查询点索引, 可通过point_set[query_indices]得到查询点集
     result_indices = None  # 正确结果索引, np矩阵, 行向量
 
-    def __init__(self):
+    def __init__(self, seed=1):
+        self.seed = seed
         self.build_center()
         self.build_point()
         self.build_test_set()

@@ -6,7 +6,7 @@ from random import sample, randint, random
 class EDA:
     h = None  # 种群数量
     k = 0.2  # 选优系数(0.1-0.3)
-    convergence_limit = 20  # 收敛限制: 连续多少次结果无改善时停止搜索
+    convergence_limit = 10  # 收敛限制: 连续多少次结果无改善时停止搜索
     optimum_solution = None  # 保存每轮迭代中的最优解, np矩阵, 行向量
     op_entropy_list = None  # 保存每轮迭代中的最优解对应的信息熵, 列表
     ave_entropy_list = None  # 保存每轮迭代中的种群平均的信息熵, 列表
@@ -89,4 +89,5 @@ class EDA:
                     convergence_count = 0  # 结果改善, 收敛计数器清零
             count += 1
             if convergence_count > self.convergence_limit:  # 连续多次结果无改善, 则退出循环
+                # print("[eda迭代次数]:", count)
                 break

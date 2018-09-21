@@ -7,6 +7,7 @@ import numpy as np
 # query_indices, result_indices 都是数据集中的成员变量
 # bucket是storage返回的编码字典
 def query(point_set, w, t, query_indices, result_indices, bucket):
+    short_list_length = 0   # 临时变量, 用于累加short_list的长度
     query_set = point_set[query_indices]
     code_mat = np.sign(query_set.dot(w) - t)
     precision = np.empty(len(query_indices))
@@ -17,5 +18,33 @@ def query(point_set, w, t, query_indices, result_indices, bucket):
         else:
             return_indices = []
         right_indices = set(return_indices).intersection(set(result_indices[i]))
+        short_list_length += len(return_indices)
         precision[i] = len(right_indices) / result_indices.shape[1]
+    print("short-list平均长度:", short_list_length/code_mat.shape[0])
+    return np.average(precision)
+
+
+# point_set为数据np矩阵, 行向量
+# w为列表, 列表元素为w矩阵, 列向量
+# t为列表, 列表元素为t数组
+# query_indices, result_indices 都是数据集中的成员变量
+# bucket是一个列表, 列表元素是编码字典
+def multiple_query(point_set, w, t, query_indices, result_indices, bucket):
+    short_list_length = 0   # 临时变量, 用于累加short_list的长度
+    query_set = point_set[query_indices]
+    pn = len(t)  # hash字典的数目
+    code_mat = []  # 列表, 用于存放查询点hash编码, 列表元素为矩阵, 行向量
+    for i in range(pn):
+        code_mat.append(np.sign(query_set.dot(w[i]) - t[i]))
+    precision = np.empty(len(query_indices))
+    for i in range(len(query_indices)):  # 对每一个查询点
+        return_indices = set()
+        for j in range(pn):  # 对每一个码本
+            code = code_mat[j][i].tostring()  # 第j个码本中的第i行
+            if code in bucket[j]:
+                return_indices = return_indices.union(set(bucket[j][code]))
+        right_indices = return_indices.intersection(set(result_indices[i]))
+        short_list_length += len(return_indices)
+        precision[i] = len(right_indices) / result_indices.shape[1]
+    print(short_list_length/len(query_indices))
     return np.average(precision)

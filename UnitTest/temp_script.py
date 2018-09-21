@@ -1,7 +1,12 @@
-import random
-
-a = range(1000)
-random.seed = 1
-print(random.sample(a,1))
-print(random.sample(a,1))
-print(random.sample(a,1))
+import numpy as np
+# a = np.array([4,3,5,7,54,25,234,23,4253,34,654,6,345,3245,324,32])
+# b = np.array([4,1,5,7,54,25,214,23,4253,34,651,6,345,345,321,92])
+a = np.array([4,3,5])
+b = np.array([4,1,5])
+c = list()
+c.append(set(a))
+c.append(set(b))
+print(c)
+print((set(np.array([3,5,4])) in c) is True)
+print((set(np.array([1,4,5])) in c) is True)
+print((set(np.array([4,2,5])) in c) is False)

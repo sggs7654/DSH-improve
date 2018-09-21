@@ -19,7 +19,7 @@ def standard(data, cluster, r, L):
                data.result_indices, code)
     entropy = get_entropy(cluster.centroids, s.weight, s.w, s.t)
     print("dsh_method:", ap, "   entropy:", entropy)
-    return len(s.hyperplanes_dict)
+    # return len(s.hyperplanes_dict)
 
 
 def on_MNIST(k, r, L):
