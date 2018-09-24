@@ -1,5 +1,7 @@
 import numpy as np
 
+cc = 300
+
 
 # point_set为数据np矩阵, 行向量
 # w为超平面参数矩阵, 列向量
@@ -17,6 +19,8 @@ def query(point_set, w, t, query_indices, result_indices, bucket):
             return_indices = bucket[code]  # 算法返回的向量索引
         else:
             return_indices = []
+        while len(return_indices) > cc:
+            return_indices.pop()
         right_indices = set(return_indices).intersection(set(result_indices[i]))
         short_list_length += len(return_indices)
         precision[i] = len(right_indices) / result_indices.shape[1]
@@ -39,12 +43,30 @@ def multiple_query(point_set, w, t, query_indices, result_indices, bucket):
     precision = np.empty(len(query_indices))
     for i in range(len(query_indices)):  # 对每一个查询点
         return_indices = set()
+        bucket_list = []
         for j in range(pn):  # 对每一个码本
             code = code_mat[j][i].tostring()  # 第j个码本中的第i行
             if code in bucket[j]:
                 return_indices = return_indices.union(set(bucket[j][code]))
-        right_indices = return_indices.intersection(set(result_indices[i]))
-        short_list_length += len(return_indices)
+                bucket_list.append(set(bucket[j][code]))
+        cross_retrieval_indices = cross_retrieval(return_indices, bucket_list, cc)
+        right_indices = cross_retrieval_indices.intersection(set(result_indices[i]))
+        short_list_length += len(cross_retrieval_indices)
         precision[i] = len(right_indices) / result_indices.shape[1]
-    print(short_list_length/len(query_indices))
+    print("short-list平均长度:", short_list_length/len(query_indices))
     return np.average(precision)
+
+
+# all是所有索引union的集合, individual是未union前的桶组成的列表
+def cross_retrieval(all_index, buckets, cc):
+    final_set = set()
+    count_list = np.zeros(len(all_index))  # 用来统计各索引的出现次数
+    indices_list = list(all_index)
+    for i in range(len(indices_list)):  # 遍历所有索引
+        for bucket in buckets:  # 统计索引被桶包含的次数
+            if indices_list[i] in bucket:
+                count_list[i] += 1
+    order = np.argsort(count_list)[::-1]
+    for i in range(0, min(cc, len(all_index))):
+        final_set.add(indices_list[order[i]])
+    return final_set
