@@ -1,14 +1,12 @@
 import numpy as np
 
-cc = 300
-
 
 # point_set为数据np矩阵, 行向量
 # w为超平面参数矩阵, 列向量
 # t为超平面参数矩阵, 数组
 # query_indices, result_indices 都是数据集中的成员变量
 # bucket是storage返回的编码字典
-def query(point_set, w, t, query_indices, result_indices, bucket):
+def query(point_set, w, t, query_indices, result_indices, bucket, cc):
     short_list_length = 0   # 临时变量, 用于累加short_list的长度
     query_set = point_set[query_indices]
     code_mat = np.sign(query_set.dot(w) - t)
@@ -33,7 +31,7 @@ def query(point_set, w, t, query_indices, result_indices, bucket):
 # t为列表, 列表元素为t数组
 # query_indices, result_indices 都是数据集中的成员变量
 # bucket是一个列表, 列表元素是编码字典
-def multiple_query(point_set, w, t, query_indices, result_indices, bucket):
+def multiple_query(point_set, w, t, query_indices, result_indices, bucket, cc):
     short_list_length = 0   # 临时变量, 用于累加short_list的长度
     query_set = point_set[query_indices]
     pn = len(t)  # hash字典的数目

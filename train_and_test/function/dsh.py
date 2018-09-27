@@ -8,7 +8,7 @@ from Data.GeneratedData import GeneratedData
 from Screening.entropy import get_entropy
 
 
-def standard(data, cluster, r, L):
+def standard(data, cluster, r, L, cc):
     s = Storage(data, cluster, length=L, r=r)
     if data.point_set.shape[1] == 2:
         draw = General.draw.draw()
@@ -16,7 +16,7 @@ def standard(data, cluster, r, L):
     code = get_code(data.point_set, s.w, s.t)
     ap = query(data.point_set, s.w, s.t,
                data.query_indices,
-               data.result_indices, code)
+               data.result_indices, code, cc)
     entropy = get_entropy(cluster.centroids, s.weight, s.w, s.t)
     print("dsh_method:", ap, "   entropy:", entropy)
     # return len(s.hyperplanes_dict)

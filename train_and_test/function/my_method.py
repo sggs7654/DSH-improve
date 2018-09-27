@@ -11,7 +11,7 @@ from Screening.entropy import get_entropy
 import time
 
 
-def multiple_dict(data, cluster, r, L, h, pn=1):  # pn为超平面簇并联数量
+def multiple_dict(data, cluster, r, L, h, pn, cc):  # pn为超平面簇并联数量
     p = Preprocessor(data, cluster, r=r)
     count = 0
     w_list, t_list = [], []
@@ -43,7 +43,7 @@ def multiple_dict(data, cluster, r, L, h, pn=1):  # pn为超平面簇并联数�
     code = multiple_get_code(data.point_set, w_list, t_list)
     ap = multiple_query(data.point_set, w_list, t_list,
                data.query_indices,
-               data.result_indices, code)
+               data.result_indices, code, cc)
     entropy = 0
     for i in range(pn):
         entropy += get_entropy(cluster.centroids, p.weight, w_list[i], t_list[i])
