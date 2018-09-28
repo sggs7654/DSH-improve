@@ -139,3 +139,25 @@ class draw:
             plt.scatter(x, y, label='centroids')
         plt.legend()
         plt.show()
+
+    # w是np矩阵, 列向量
+    # data为数据类
+    def new_hp(self, data, w, t):
+        hyperplane = namedtuple('hyperplane', ['w', 't'])  # 超平面命名元组
+        self.data = data
+        # for hp in self.hyperplanes_dict.values():
+        for i in range(len(t)):
+            hp = hyperplane(w=w[:, i], t=t[i])
+            px, py = self.get_line(hp)
+            if max(px) - min(px) > 1000:
+                raise RecursionError(hp)
+            plt.plot(px, py, color='#FF0000', alpha=0.3)
+        plt.plot([], [], color='#FF0000', label='hyperplanes projection', alpha=0.8)
+        x = []
+        y = []
+        for i in self.data.point_set:
+            x.append(i[0])
+            y.append(i[1])
+        plt.scatter(x, y, label='data point')
+        plt.legend()
+        plt.show()
