@@ -2,6 +2,7 @@ import train_and_test.function.dsh as dsh
 import train_and_test.function.my_method as my
 from train_and_test.function import e2lsh
 from train_and_test.function import pcah
+from train_and_test.function import klsh
 from Data.MNIST import MNIST
 from Data.GeneratedData import GeneratedData
 from Cluster.kmeans import Cluster
@@ -21,8 +22,9 @@ start_time = time()
 cluster = Cluster(data.point_set, k=k)
 print("[量化耗时]", time()-start_time)
 
-# dsh.standard(data, cluster, r, L, cc=Cc)
+dsh.standard(data, cluster, r, L, cc=Cc)
 my.multiple_dict(data, cluster, r, L, h, pn, cc=Cc)
 e2lsh.standard(data, k=L, l=500, r=2000, cc=Cc)
 pcah.standard(data, L=L, cc=Cc)
+klsh.standard(data, L=L, cc=Cc)
 
