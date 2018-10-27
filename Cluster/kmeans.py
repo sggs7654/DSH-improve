@@ -10,7 +10,6 @@ class Cluster:
     point_set = None
     centroids = None
     labels = None
-    inertia = None
 
     def __init__(self, point_set, k=20):  # 接收一个np矩阵作为数据集
         self.point_set = point_set
@@ -19,7 +18,6 @@ class Cluster:
         estimator.fit(self.point_set)  # 拟合模型
         self.labels = estimator.labels_  # 获取聚类标签
         self.centroids = estimator.cluster_centers_  # 获取聚类中心
-        self.inertia = estimator.inertia_  # 获取SSE
 
     def get_centroids_info(self):
         # 计算质心临近点索引
