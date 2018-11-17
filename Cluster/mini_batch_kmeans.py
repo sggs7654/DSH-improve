@@ -12,12 +12,13 @@ class Cluster:
     labels = None
     inertia = None
 
-    def __init__(self, point_set, k=20):  # 接收一个np矩阵作为数据集
+    def __init__(self, point_set, k=40, bs=160, it=10):  # 接收一个np矩阵作为数据集
         self.point_set = point_set
         self.k = k
         estimator = MiniBatchKMeans(n_clusters=self.k,
-                                    max_iter=20,
-                                    batch_size=100)  # 初始化聚类器
+                                    # max_iter=it,
+                                    batch_size=bs,
+                                    max_no_improvement=it)  # 初始化聚类器
         estimator.fit(self.point_set)  # 拟合模型
         self.labels = estimator.labels_  # 获取聚类标签
         self.centroids = estimator.cluster_centers_  # 获取聚类中心
@@ -38,3 +39,26 @@ class Cluster:
         for i in range(self.point_set.point_num):
             centroids_index = self.cluster.labels[i]
             self.weight[centroids_index] += 1
+
+    def show(self):  # change
+        clusters = []
+        for i in range(self.k):
+            clusters.append([])
+        for i in range(self.point_set.shape[0]):
+            clusters[self.labels[i]].append(self.point_set[i])
+        x = []
+        y = []
+        for i in range(self.k):
+            for j in clusters[i]:
+                x.append(j[0])
+                y.append(j[1])
+            plt.scatter(x, y, label='Cluster ' + str(i))
+            x.clear()
+            y.clear()
+        for i in range(self.k):
+            x.append(self.centroids[i, 0])
+            y.append(self.centroids[i, 1])
+            # plt.scatter(self.centroids[i, 0], self.centroids[i, 1], label='Centroids' + str(i))
+        plt.scatter(x, y, label='Centroids')
+        plt.legend()
+        plt.show()

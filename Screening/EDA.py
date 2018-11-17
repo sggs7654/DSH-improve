@@ -5,8 +5,8 @@ from random import sample, randint, random
 
 class EDA:
     h = None  # 种群数量
-    k = 0.2  # 选优系数(0.1-0.3)
-    convergence_limit = 5  # 收敛限制: 连续多少次结果无改善时停止搜索
+    k = None  # 选优系数(0.1-0.3)
+    convergence_limit = None  # 收敛限制: 连续多少次结果无改善时停止搜索
     optimum_solution = None  # 保存每轮迭代中的最优解, np矩阵, 行向量
     op_entropy_list = None  # 保存每轮迭代中的最优解对应的信息熵, 列表
     ave_entropy_list = None  # 保存每轮迭代中的种群平均的信息熵, 列表
@@ -18,11 +18,13 @@ class EDA:
     centroids = None  # 质心坐标, np矩阵, 行向量
     weight = None  # 质心权重, np数组
 
-    def __init__(self, w, t, centroids, weight, m, h=100):
+    def __init__(self, w, t, centroids, weight, m, h=100, k=0.2, cl=5):
         self.h = h
         self.w, self.t, self.centroids, self.weight = w, t, centroids, weight
         self.n = len(t)
         self.m = m
+        self.k = k
+        self.convergence_limit = cl
         self.population = np.empty((self.h, self.m))
         for i in range(self.h):
             self.population[i] = np.array(sample(range(self.n), self.m))
@@ -89,5 +91,6 @@ class EDA:
                     convergence_count = 0  # 结果改善, 收敛计数器清零
             count += 1
             if convergence_count > self.convergence_limit:  # 连续多次结果无改善, 则退出循环
-                # print("[eda迭代次数]:", count)
-                break
+                # print("[迭代次数]:", count)
+                # print("[最优适应度]", max(self.op_entropy_list))
+                return count-1, max(self.op_entropy_list)

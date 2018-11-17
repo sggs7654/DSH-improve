@@ -5,7 +5,8 @@ import struct
 
 
 class MNIST:
-    path = r"D:\DATASET\mnist\t10k-images.idx3-ubyte"
+    # path = r"D:\DATASET\mnist\t10k-images.idx3-ubyte"
+    path = r"D:\DATASET\mnist\train-images.idx3-ubyte"
     buf = None  # 保存入读缓存的数据集, 在__init__()中产生, load_data()执行后清空
     point_num = None  # 数据点数
     vec_length = 784  # 向量长度, 也可以通过mat.shape[1]获得

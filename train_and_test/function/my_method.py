@@ -11,14 +11,14 @@ from Screening.entropy import get_entropy
 import time
 
 
-def multiple_dict(data, cluster, r, L, h, pn, cc):  # pn为超平面簇并联数量
+def multiple_dict(data, cluster, r, L, pn, cc):  # pn为超平面簇并联数量
     p = Preprocessor(data, cluster, r=r)
     count = 0
     w_list, t_list = [], []
     result_indices_list = []  # 里面装着set(result_indices), 用来判重
-    a = time.time()
+    # a = time.time()
     while True:
-        eda = EDA(w=p.w, t=p.t, centroids=p.centroids, weight=p.weight, m=L, h=h)
+        eda = EDA(w=p.w, t=p.t, centroids=p.centroids, weight=p.weight, m=L)
         eda.search()
         result_indices = eda.optimum_solution[len(eda.optimum_solution) - 1]
         result_indices = result_indices.astype(np.int)
@@ -39,16 +39,17 @@ def multiple_dict(data, cluster, r, L, h, pn, cc):  # pn为超平面簇并联数
                 count += 1
         if count >= pn:
             break
-    print("[搜索耗时]", time.time()-a)
+    # print("[搜索耗时]", time.time()-a)
     code = multiple_get_code(data.point_set, w_list, t_list)
-    ap = multiple_query(data.point_set, w_list, t_list,
+    ar,ap = multiple_query(data.point_set, w_list, t_list,
                data.query_indices,
                data.result_indices, code, cc)
     entropy = 0
     for i in range(pn):
         entropy += get_entropy(cluster.centroids, p.weight, w_list[i], t_list[i])
-    print("my_method:", ap, "   entropy:", entropy/pn)
-    # return len(p.t)
+    f1 = 2*ar*ap/(ar+ap)
+    # print("my_method:", ar, "   entropy:", entropy/pn)
+    return f1
 
 
 def standard(data, cluster, r, L, h):

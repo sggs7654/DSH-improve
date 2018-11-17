@@ -38,6 +38,7 @@ def multiple_query(point_set, w, t, query_indices, result_indices, bucket, cc):
     code_mat = []  # 列表, 用于存放查询点hash编码, 列表元素为矩阵, 行向量
     for i in range(pn):
         code_mat.append(np.sign(query_set.dot(w[i]) - t[i]))
+    recall = np.empty(len(query_indices))
     precision = np.empty(len(query_indices))
     for i in range(len(query_indices)):  # 对每一个查询点
         return_indices = set()
@@ -50,9 +51,10 @@ def multiple_query(point_set, w, t, query_indices, result_indices, bucket, cc):
         cross_retrieval_indices = cross_retrieval(return_indices, bucket_list, cc)
         right_indices = cross_retrieval_indices.intersection(set(result_indices[i]))
         short_list_length += len(cross_retrieval_indices)
-        precision[i] = len(right_indices) / result_indices.shape[1]
-    print("short-list平均长度:", short_list_length/len(query_indices))
-    return np.average(precision)
+        recall[i] = len(right_indices) / result_indices.shape[1]
+        precision[i] = len(right_indices) / len(cross_retrieval_indices)
+    # print("short-list平均长度:", short_list_length/len(query_indices))
+    return np.average(recall), np.average(precision)
 
 
 # all是所有索引union的集合, individual是未union前的桶组成的列表
